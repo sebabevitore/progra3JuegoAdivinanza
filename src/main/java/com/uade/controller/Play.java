@@ -10,6 +10,7 @@ public class Play {
     Map<Integer, Personaje> personajesMap;
 
     public Play(ArrayList<Personaje> personajes) {
+
     }
 
 

@@ -1,8 +1,9 @@
 package com.uade.model;
 
-public enum ColorCamiseta {
+public enum Color {
     BLUE,
     RED,
     GREEN,
     YELLOW,
+    ORANGE
 }
