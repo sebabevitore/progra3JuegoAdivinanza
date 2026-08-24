@@ -12,32 +12,37 @@ public class Play {
         personajes = new ArrayList<>();
     }
 
-    public void inicializador (){
+    public void inicializador() {
         List<String> nombresFemeninos = List.of(
-                "Ana", "Diana", "Elena", "Gabriela", "Ines",
-                "Karina", "Maria", "Olivia", "Quinta", "Sofia",
-                "Ursula", "Valeria"
+                "Ana", "Beatriz", "Clara", "Diana", "Elena", "Florencia", "Gabriela",
+                "Hilda", "Inés", "Julia", "Karina", "Laura", "María", "Natalia",
+                "Olivia", "Paula", "Quintina", "Rosa", "Sofía", "Teresa",
+                "Úrsula", "Valeria", "Ximena"
         );
 
         List<String> nombresMasculinos = List.of(
-                "Bruno", "Carlos", "Fernando", "Hugo", "Javier",
-                "Luis", "Nicolas", "Pablo", "Raul", "Tomas",
-                "Walter"
+                "Andrés", "Bruno", "Carlos", "Diego", "Esteban", "Federico", "Gabriel",
+                "Hugo", "Ignacio", "Javier", "Kevin", "Lucas", "Martín", "Nicolás",
+                "Omar", "Pablo", "Quique", "Ramiro", "Santiago", "Tomás",
+                "Ulises", "Valentín", "Walter"
         );
 
-        for (String nombre : nombresFemeninos) {
-            personajes.add(new Personaje(nombre, false));
+        for (int i = 0; i < 11; i++) {
+            personajes.add(new Personaje(nombresFemeninos.get(i), false));
+            personajes.add(new Personaje(nombresMasculinos.get(i), true));
         }
-
-        for (String nombre : nombresMasculinos) {
-            personajes.add(new Personaje(nombre, true));
-        }
-
-
-
-
-
+        personajes.add(new Personaje(nombresFemeninos.get(20), false));
 
     }
 
+
+
+
+    public List<Personaje> getPersonajes() {
+        return personajes;
+    }
+
+    public void setPersonajes(List<Personaje> personajes) {
+        this.personajes = personajes;
+    }
 }

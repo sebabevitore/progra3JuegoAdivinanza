@@ -9,6 +9,7 @@ public class Personaje {
     private boolean usaLentes;
     private boolean tieneBarba;
     private boolean esPelado;
+    private boolean tieneGorro;
 
     public Personaje(String nombre, boolean esHombre) {
         this.nombre = nombre;
