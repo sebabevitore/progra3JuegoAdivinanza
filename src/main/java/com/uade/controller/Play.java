@@ -1,12 +1,12 @@
 package com.uade.controller;
 
 import com.uade.model.Personaje;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Play {
-    List<Personaje> personajes;
+    private List<Personaje> personajes;
 
     public Play() {
         personajes = new ArrayList<>();
@@ -27,22 +27,42 @@ public class Play {
                 "Ulises", "Valentín", "Walter"
         );
 
-        for (int i = 0; i < 11; i++) {
-            personajes.add(new Personaje(nombresFemeninos.get(i), false));
-            personajes.add(new Personaje(nombresMasculinos.get(i), true));
+        String[] coloresDisponibles = {"Colorado", "Negro", "Amarillo"};
+        Random random = new Random();
+
+        // Creamos exactamente 23 personajes alternando géneros
+        for (int i = 0; i < 23; i++) {
+            boolean esHombre = (i % 2 != 0); // Si el índice es impar, es hombre. Si es par, mujer.
+
+            // Toma el nombre de la lista correspondiente según el índice
+            String nombre = esHombre ? nombresMasculinos.get(i) : nombresFemeninos.get(i);
+
+            // Generación aleatoria de atributos
+            String colorPelo = coloresDisponibles[random.nextInt(coloresDisponibles.length)];
+            boolean usaLentes = random.nextBoolean();
+            boolean esPelado = random.nextBoolean();
+            boolean tieneGorro = random.nextBoolean();
+
+            // Lógica simple: si es mujer o si es pelado, no tiene barba
+            boolean tieneBarba = esHombre && !esPelado && random.nextBoolean();
+
+            // Instanciamos pasándole los datos ya calculados (Cumple con Principio de Responsabilidad Única)
+            Personaje p = new Personaje(
+                    i + 1,
+                    nombre,
+                    esHombre,
+                    colorPelo,
+                    usaLentes,
+                    tieneBarba,
+                    esPelado,
+                    tieneGorro
+            );
+
+            personajes.add(p);
         }
-        personajes.add(new Personaje(nombresFemeninos.get(20), false));
-
     }
-
-
-
 
     public List<Personaje> getPersonajes() {
         return personajes;
-    }
-
-    public void setPersonajes(List<Personaje> personajes) {
-        this.personajes = personajes;
     }
 }
