@@ -16,9 +16,9 @@ La consigna nos pide que los 23 personajes iniciales se ubiquen ordenados por su
   2. **Conquistar:** Llega hasta el caso trivial de listas con 1 solo personaje.
   3. **Combinar (Merge):** Fusiona las mitades comparando los géneros y ubicando primero a las mujeres en un arreglo temporal, reconstruyendo la lista completa.
 * **¿Por qué descartamos Burbujeo (Bubble Sort)?**
-  El ordenamiento por burbuja tiene un costo cuadrático de $O(n^2)$. Si bien con 23 personajes la computadora lo resuelve rápido, conceptualmente es pésimo si el día de mañana el juego escala a 10.000 personajes.
+  El ordenamiento por burbuja tiene un costo cuadrático. No es eficiente si el día de mañana el juego escala a 10.000 personajes.
 * **¿Por qué elegimos MergeSort sobre QuickSort?**
-  * QuickSort depende críticamente de elegir un buen "pivot". Si el pivot queda desbalanceado (lo cual es muy probable en un conjunto donde solo hay dos valores posibles: hombre o mujer), QuickSort se degrada a su peor caso de $O(n^2).
+  * QuickSort depende críticamente de elegir un buen "pivot". Si el pivot queda desbalanceado (lo cual es muy probable en un conjunto donde solo hay dos valores posibles: hombre o mujer).
   * **MergeSort es predecible y seguro:** garantiza siempre un tiempo de ejecución casi lineal de $O(n \log n)$ tanto en el mejor, promedio y peor caso.
 
 ### B. Proceso de Búsqueda y Descarte (Adivinanza en el Tablero)
