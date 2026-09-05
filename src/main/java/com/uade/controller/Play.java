@@ -1,34 +1,32 @@
 package com.uade.controller;
 
 import com.uade.model.Personaje;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Play {
-    List<Personaje> personajes;
+    private List<Personaje> personajes;
 
     public Play() {
         personajes = new ArrayList<>();
     }
 
-    public void inicializador (){
+    public void inicializador() {
         List<String> nombresFemeninos = List.of(
-                "Ana", "Diana", "Elena", "Gabriela", "Ines",
-                "Karina", "Maria", "Olivia", "Quinta", "Sofia",
-                "Ursula", "Valeria"
+                "Ana", "Beatriz", "Clara", "Diana", "Elena", "Florencia", "Gabriela",
+                "Hilda", "Inés", "Julia", "Karina", "Laura", "María", "Natalia",
+                "Olivia", "Paula", "Quintina", "Rosa", "Sofía", "Teresa",
+                "Úrsula", "Valeria", "Ximena"
         );
 
         List<String> nombresMasculinos = List.of(
-                "Bruno", "Carlos", "Fernando", "Hugo", "Javier",
-                "Luis", "Nicolas", "Pablo", "Raul", "Tomas",
-                "Walter"
+                "Andrés", "Bruno", "Carlos", "Diego", "Esteban", "Federico", "Gabriel",
+                "Hugo", "Ignacio", "Javier", "Kevin", "Lucas", "Martín", "Nicolás",
+                "Omar", "Pablo", "Quique", "Ramiro", "Santiago", "Tomás",
+                "Ulises", "Valentín", "Walter"
         );
 
-<<<<<<< Updated upstream
-        for (String nombre : nombresFemeninos) {
-            personajes.add(new Personaje(nombre, false));
-=======
         String[] coloresDisponibles = {"Colorado", "Negro", "Amarillo"};
         Random random = new Random();
 
@@ -48,6 +46,7 @@ public class Play {
             // Lógica simple: si es mujer o si es pelado, no tiene barba
             boolean tieneBarba = esHombre && random.nextBoolean();
 
+            // Instanciamos pasándole los datos ya calculados (Cumple con Principio de Responsabilidad Única)
             Personaje p = new Personaje(
                     i + 1,
                     nombre,
@@ -60,18 +59,10 @@ public class Play {
             );
 
             personajes.add(p);
->>>>>>> Stashed changes
         }
-
-        for (String nombre : nombresMasculinos) {
-            personajes.add(new Personaje(nombre, true));
-        }
-
-
-
-
-
-
     }
 
+    public List<Personaje> getPersonajes() {
+        return personajes;
+    }
 }
