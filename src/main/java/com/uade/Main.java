@@ -7,12 +7,11 @@ public class Main {
     public static void main(String[] args) {
         Play juego = new Play();
 
-        // Ejecutamos la creación aleatoria de personajes
-        juego.inicializador();
+        // Ejecutamos la inicialización y el ordenamiento de personajes
+        juego.inicializar();
 
-        // Comprobación por consola
-        System.out.println("Total de personajes generados: " + juego.getPersonajes().size() + "\n");
-
+        System.out.println("=== PERSONAJES (Ordenados con MergeSort - Mujeres primero) ===");
+        System.out.println("Total: " + juego.getPersonajes().size() + "\n");
         for (Personaje p : juego.getPersonajes()) {
             System.out.println(p.toString());
         }
