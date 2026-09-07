@@ -2,16 +2,20 @@ package com.uade.model;
 
 import com.uade.strategy.Filtro;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Player {
     private String nombre;
     private Personaje personajeSecreto;
     private List<Personaje> candidatosRestantes;
+    private Set<String> filtrosUsados;
 
     public Player(String nombre, List<Personaje> personajesIniciales) {
         this.nombre = nombre;
         this.candidatosRestantes = new ArrayList<>(personajesIniciales);
+        this.filtrosUsados = new HashSet<>();
     }
 
     public void setPersonajeSecreto(Personaje personaje) {
@@ -46,6 +50,14 @@ public class Player {
         return cantidadAntes - this.candidatosRestantes.size();
     }
 
+    public boolean yaUsoFiltro(String descripcionFiltro) {
+        return filtrosUsados.contains(descripcionFiltro);
+    }
+    
+    public void registrarFiltroUsado(String descripcionFiltro) {
+        filtrosUsados.add(descripcionFiltro);
+    }
+    
     public String getNombre() {
         return nombre;
     }

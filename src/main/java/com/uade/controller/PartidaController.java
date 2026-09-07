@@ -7,52 +7,39 @@ import com.uade.strategy.Filtro;
 import com.uade.strategy.SelectorDeFiltro;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 
 public class PartidaController {
     private Player humano;
     private Player maquina;
     private Scanner scanner;
     private Random random;
-    private Set<String> filtrosUsadosMaquina;
 
     public PartidaController() {
         this.scanner = new Scanner(System.in);
         this.random = new Random();
-        this.filtrosUsadosMaquina = new HashSet<>();
     }
 
+    // =========================================================================
+    // MODO HUMANO VS MÁQUINA
+    // =========================================================================
     public void iniciarPartida() {
         System.out.println("==========================================================================");
         System.out.println("          BIENVENIDO AL JUEGO DE ADIVINANZA (MODO CONSOLA)               ");
         System.out.println("==========================================================================");
 
-        // 1. Generación de los 23 personajes
-        CreadorPersonajes creador = new CreadorPersonajes();
-        creador.inicializador();
-        List<Personaje> personajes = creador.getPersonajes();
+        List<Personaje> personajes = generarYOrdenarPersonajes();
 
-        // 2. Ordenamiento por género usando MergeSort (mujeres primero)
-        MergeSort mergeSort = new MergeSort();
-        mergeSort.mergeSort(personajes, 0, personajes.size() - 1);
-
-        // 3. Instanciación de Jugadores con su copia propia de los 23 personajes
         this.humano = new Player("Humano", personajes);
         this.maquina = new Player("Máquina", personajes);
 
-        // 4. Selección ciega de personajes secretos
-        // La máquina elige aleatoriamente
         Personaje secretoMaquina = personajes.get(random.nextInt(personajes.size()));
         maquina.setPersonajeSecreto(secretoMaquina);
 
-        // El humano elige su personaje secreto
         seleccionarPersonajeHumano(personajes);
 
-        // 5. Flujo de turnos alternados
         boolean turnoHumano = true;
         boolean partidaTerminada = false;
 
@@ -62,15 +49,13 @@ public class PartidaController {
             if (turnoHumano) {
                 partidaTerminada = ejecutarTurnoHumano(humano, maquina);
             } else {
-                partidaTerminada = ejecutarTurnoMaquina(maquina, humano);
+                partidaTerminada = ejecutarTurnoMaquina(maquina, humano, false);
             }
-
             if (!partidaTerminada) {
                 turnoHumano = !turnoHumano;
             }
         }
 
-        // Fin de partida: revelación de personajes
         System.out.println("\n==========================================================================");
         System.out.println("                           FIN DE LA PARTIDA                              ");
         System.out.println("==========================================================================");
@@ -79,6 +64,65 @@ public class PartidaController {
         System.out.println("Tu personaje secreto era: " + humano.getPersonajeSecreto().getNombre() +
                 " (ID: " + humano.getPersonajeSecreto().getId() + ")");
         System.out.println("==========================================================================");
+    }
+
+    // =========================================================================
+    // MODO MÁQUINA VS MÁQUINA (proceso de decisión visible)
+    // =========================================================================
+    public void iniciarPartidaMaquinaVsMaquina() {
+        System.out.println("==========================================================================");
+        System.out.println("               MODO MÁQUINA VS MÁQUINA (proceso visible)                 ");
+        System.out.println("==========================================================================");
+
+        List<Personaje> personajes = generarYOrdenarPersonajes();
+
+        Player maquina1 = new Player("Máquina 1", personajes);
+        Player maquina2 = new Player("Máquina 2", personajes);
+
+        maquina1.setPersonajeSecreto(personajes.get(random.nextInt(personajes.size())));
+        maquina2.setPersonajeSecreto(personajes.get(random.nextInt(personajes.size())));
+
+        System.out.println("(Secretos asignados y ocultos entre sí; se revelan al finalizar la partida)");
+        System.out.println("Total de candidatos iniciales por jugador: " + personajes.size());
+
+        boolean turnoUno = true;
+        boolean partidaTerminada = false;
+        int numeroTurno = 1;
+
+        while (!partidaTerminada) {
+            System.out.println("\n----- Turno " + numeroTurno + " -----");
+            if (turnoUno) {
+                partidaTerminada = ejecutarTurnoMaquina(maquina1, maquina2, true);
+            } else {
+                partidaTerminada = ejecutarTurnoMaquina(maquina2, maquina1, true);
+            }
+            turnoUno = !turnoUno;
+            numeroTurno++;
+        }
+
+        System.out.println("\n==========================================================================");
+        System.out.println("                     FIN DE LA PARTIDA (MÁQUINA VS MÁQUINA)               ");
+        System.out.println("==========================================================================");
+        System.out.println("Secreto de Máquina 1: " + maquina1.getPersonajeSecreto().getNombre() +
+                " (ID: " + maquina1.getPersonajeSecreto().getId() + ")");
+        System.out.println("Secreto de Máquina 2: " + maquina2.getPersonajeSecreto().getNombre() +
+                " (ID: " + maquina2.getPersonajeSecreto().getId() + ")");
+        System.out.println("Turnos jugados: " + (numeroTurno - 1));
+        System.out.println("==========================================================================");
+    }
+
+    // =========================================================================
+    // GENERACIÓN Y ORDEN COMPARTIDOS POR AMBOS MODOS
+    // =========================================================================
+    private List<Personaje> generarYOrdenarPersonajes() {
+        CreadorPersonajes creador = new CreadorPersonajes();
+        creador.inicializador();
+        List<Personaje> personajes = creador.getPersonajes();
+
+        MergeSort mergeSort = new MergeSort();
+        mergeSort.mergeSort(personajes, 0, personajes.size() - 1);
+
+        return personajes;
     }
 
     private void seleccionarPersonajeHumano(List<Personaje> personajes) {
@@ -123,12 +167,10 @@ public class PartidaController {
             for (Personaje c : humano.getCandidatosRestantes()) {
                 System.out.println(c.toString());
             }
-            // Vuelve a dar las opciones de turno sin perderlo
             return ejecutarTurnoHumano(humano, maquina);
         }
 
         if (opcion == 1) {
-            // Opción 1: Preguntar con Filtro
             List<Filtro> filtros = CatalogoFiltros.obtenerFiltrosDisponibles();
             System.out.println("\n--- Catálogo de Preguntas Disponibles ---");
             for (int i = 0; i < filtros.size(); i++) {
@@ -153,7 +195,6 @@ public class PartidaController {
 
             return false;
         } else {
-            // Opción 2: Arriesgar personaje directo
             System.out.println("\n--- Tus sospechosos actuales ---");
             for (Personaje c : humano.getCandidatosRestantes()) {
                 System.out.println("  [ID: " + c.getId() + "] " + c.getNombre());
@@ -194,38 +235,30 @@ public class PartidaController {
     }
 
     // =========================================================================
-    // PUNTO DE EXTENSIÓN: Heurística de la Máquina
-    // Un compañero de equipo integrará aquí la heurística Greedy definitiva.
+    // TURNO DE MÁQUINA — reutilizado por ambos modos
+    // mostrarProceso=false en Humano vs Máquina (no revela la deliberación)
+    // mostrarProceso=true en Máquina vs Máquina (requisito de la consigna)
     // =========================================================================
-    public boolean ejecutarTurnoMaquina(Player maquina, Player rival) {
+    public boolean ejecutarTurnoMaquina(Player maquina, Player rival, boolean mostrarProceso) {
         System.out.println("\n==================================================");
         System.out.println(">>> TURNO DE: " + maquina.getNombre().toUpperCase());
         List<Personaje> candidatos = maquina.getCandidatosRestantes();
         System.out.println("La Máquina tiene " + candidatos.size() + " sospechosos restantes.");
 
-        // Regla 1: Si le queda 1 solo candidato, arriesga directamente ese personaje
         if (candidatos.size() == 1) {
-            Personaje candidatoUnico = candidatos.get(0);
-            System.out.println("La Máquina decide arriesgar directo: ¿Tu personaje es " +
-                    candidatoUnico.getNombre() + " (ID: " + candidatoUnico.getId() + ")?");
-
-            if (rival.esCorrecto(candidatoUnico)) {
-                System.out.println("\n**************************************************************");
-                System.out.println("¡La Máquina ha adivinado correctamente tu personaje secreto!");
-                System.out.println(">>> LA MÁQUINA HA GANADO LA PARTIDA. <<<");
-                System.out.println("**************************************************************");
-                return true;
-            } else {
-                System.out.println("La Máquina falló al arriesgar.");
-                candidatos.remove(candidatoUnico);
-                return false;
-            }
+            return arriesgarCandidato(maquina, rival, candidatos.get(0));
         }
 
-        // Regla 2: Si le quedan más de 1, selecciona una pregunta disponible
-        Filtro filtroElegido = seleccionarFiltroMaquina(candidatos);
-        System.out.println("La Máquina pregunta: \"" + filtroElegido.getDescripcion() + "\"");
+        Filtro filtroElegido = seleccionarFiltroMaquina(maquina, candidatos, mostrarProceso);
 
+        if (filtroElegido == null) {
+            System.out.println("La Máquina ya no tiene preguntas útiles disponibles.");
+            System.out.println("Quedan " + candidatos.size() + " sospechosos empatados en características.");
+            Personaje candidatoElegido = candidatos.get(random.nextInt(candidatos.size()));
+            return arriesgarCandidato(maquina, rival, candidatoElegido);
+        }
+
+        System.out.println("La Máquina pregunta: \"" + filtroElegido.getDescripcion() + "\"");
         boolean respuesta = rival.responderFiltro(filtroElegido);
         System.out.println("Respuesta a la Máquina: " + (respuesta ? ">>> SÍ <<<" : ">>> NO <<<"));
 
@@ -236,32 +269,54 @@ public class PartidaController {
         return false;
     }
 
+    private boolean arriesgarCandidato(Player maquina, Player rival, Personaje candidato) {
+        System.out.println("La Máquina decide arriesgar directo: ¿Tu personaje es " +
+                candidato.getNombre() + " (ID: " + candidato.getId() + ")?");
+
+        if (rival.esCorrecto(candidato)) {
+            System.out.println("\n**************************************************************");
+            System.out.println("¡" + maquina.getNombre() + " ha adivinado correctamente el personaje secreto!");
+            System.out.println(">>> " + maquina.getNombre().toUpperCase() + " HA GANADO LA PARTIDA. <<<");
+            System.out.println("**************************************************************");
+            return true;
+        } else {
+            System.out.println(maquina.getNombre() + " falló al arriesgar.");
+            maquina.getCandidatosRestantes().remove(candidato);
+            return false;
+        }
+    }
+
     /**
-     * Selección de filtro de la máquina.
-     * (Punto de extensión para conectar con algoritmo Greedy).
+     * Selección de filtro de la máquina, ahora consultando el historial
+     * propio de CADA jugador (maquina.yaUsoFiltro / registrarFiltroUsado)
+     * en vez de un Set compartido — necesario para que dos máquinas
+     * jugando entre sí no compartan su historial de preguntas.
      */
-    private Filtro seleccionarFiltroMaquina(List<Personaje> candidatos) {
+    private Filtro seleccionarFiltroMaquina(Player maquina, List<Personaje> candidatos, boolean mostrarProceso) {
         List<Filtro> catalogo = CatalogoFiltros.obtenerFiltrosDisponibles();
         List<Filtro> noUsados = new ArrayList<>();
 
         for (Filtro f : catalogo) {
-            if (!filtrosUsadosMaquina.contains(f.getDescripcion())) {
+            if (!maquina.yaUsoFiltro(f.getDescripcion())) {
                 noUsados.add(f);
             }
         }
 
-        Filtro seleccionado;
-        if (!noUsados.isEmpty()) {
-            SelectorDeFiltro selector = new SelectorDeFiltro();
-            seleccionado = selector.elegirMejorFiltro(candidatos, noUsados);
-        } else {
-            // Si ya se preguntaron todos los filtros del catálogo, se recurre a uno al azar
-            // (situación límite: no debería ocurrir con 23 personajes y los filtros definidos,
-            // pero se deja como resguardo)
-            seleccionado = catalogo.get(random.nextInt(catalogo.size()));
+        if (noUsados.isEmpty()) {
+            return null;
         }
 
-        filtrosUsadosMaquina.add(seleccionado.getDescripcion());
+        SelectorDeFiltro selector = new SelectorDeFiltro();
+        Filtro seleccionado = selector.elegirMejorFiltro(candidatos, noUsados, mostrarProceso);
+        
+        if (seleccionado == null) {
+            // El selector determinó que ningún filtro restante aporta
+            // información nueva (indistinguibilidad total detectada antes
+            // de gastar un turno preguntando).
+            return null;
+        }
+        
+        maquina.registrarFiltroUsado(seleccionado.getDescripcion());
         return seleccionado;
     }
 
