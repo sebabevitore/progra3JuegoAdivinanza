@@ -18,8 +18,9 @@ public class FiltroGenero implements Filtro {
     public String getDescripcion() {
         return "¿Es " + (esHombre ? "hombre" : "mujer") + "?";
     }
-
+    
     public boolean isEsHombre() {
         return esHombre;
     }
+    
 }
